@@ -123,11 +123,11 @@ app.get('/check', (req, res) => {
 })
 
 app.get('/return', (req, res) => {
-    res.send('success');
+    res.render('success');
 })
 
 app.get('/cancel', (req, res) => {
-    res.send('cancel');
+    res.render('cancel');
 })
 
 app.listen(3000 || process.env.PORT, () => {

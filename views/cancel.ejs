@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Payment Cancelled</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f6f5ee;
+      }
+      .jumbotron {
+        background-color: #fff;
+        padding: 50px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .jumbotron h1 {
+        color: #333;
+      }
+      .jumbotron p {
+        color: #666;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+      }
+      .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="jumbotron">
+            <h1 class="display-4">Payment Cancelled</h1>
+            <p class="lead">
+              <i class="fas fa-exclamation-triangle"></i> Your payment has been
+              cancelled. Please try again later.
+            </p>
+            <a href="/" class="btn btn-primary">Go back to home page</a>
+            <span id="countdown" class="badge badge-primary">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const countdownElement = document.getElementById("countdown");
+      const intervalId = setInterval(() => {
+        const secondsLeft = parseInt(countdownElement.textContent);
+        if (secondsLeft > 0) {
+          countdownElement.textContent = String(secondsLeft - 1);
+        } else {
+          clearInterval(intervalId);
+          //   window.location.href = "/";
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>
