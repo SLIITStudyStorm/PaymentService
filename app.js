@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const transactionSchema = require('./transactionSchema');
 
+app.set('view engine', 'ejs');
 dotenv.config();
 app.use(express.static(__dirname + '/public'))
 app.use(
@@ -20,32 +21,29 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 
 var isVerified;
 
-app.get('/', (req, res) => {
-    // render something
-})
-
 let merchantSecret = process.env.PAYHERE_SECRET;
 
-app.post('/hash', (req, res) => {
-    let orderId = req.body.order_id;
-    let amount = req.body.amount;
+app.get('/', (req, res) => {
+    const orderId = req.query.order_id || req.body.order_id;
+    const amount = req.query.amount || req.body.amount;
+    const item = req.query.item || req.body.item;
 
-    if (!orderId || !amount) {
-        return res.status(400).json({ error: 'Missing order_id or amount' });
+    if (!orderId || !amount || !item) {
+        return res.status(400).json({ error: 'Missing order_id or amount or item' });
     }
-
+    let merchantId = '1226319';
     let hashedSecret = md5(merchantSecret).toString().toUpperCase();
     let amountFormatted = parseFloat(amount).toLocaleString('en-us', { minimumFractionDigits: 2 }).replaceAll(',', '');
     let currency = 'LKR';
-    let hash = md5(orderId + amountFormatted + currency + hashedSecret).toString().toUpperCase();
+    let hash = md5(merchantId + orderId + amountFormatted + currency + hashedSecret).toString().toUpperCase();
 
-    res.json({
-        "order_id": orderId,
-        "amount": amount,
-        "currency": currency,
-        "hash": hash
+    res.render('index', {
+        orderId: orderId,
+        amount: amountFormatted,
+        item: item,
+        hash: hash
     });
-});
+})
 
 app.post('/notify', async (req, res) => {
 
