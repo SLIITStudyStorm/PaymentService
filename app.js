@@ -5,7 +5,9 @@ const md5 = require('md5');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const transactionSchema = require('./transactionSchema');
+const paymentSchema = require('./paymentSchema');
 const { default: axios } = require('axios');
+
 
 app.set('view engine', 'ejs');
 dotenv.config();
@@ -18,7 +20,7 @@ app.use(
 
 app.use(express.json());
 const Transaction = mongoose.model('Transaction', transactionSchema);
-
+const Payment = mongoose.model('Payment', paymentSchema);
 
 var isVerified;
 
@@ -38,11 +40,9 @@ app.get('/', async (req, res) => {
     }
 
     try {
-        const response = await axios.get(`http://localhost:5000/api/course/one/${courseId}`);
+        const response = await axios.get(`${process.env.COURSE_SERVER}/api/course/one/${courseId}`);
         const item = response.data.payload.name;
         const amount = response.data.payload.price;
-
-        console.log('check')
 
         orderId = generateUniqueOrderId(courseId);
         let merchantId = '1226319';
@@ -54,14 +54,15 @@ app.get('/', async (req, res) => {
         res.render('index', {
             email: email,
             orderId: orderId,
+            courseId: courseId,
             amount: amountFormatted,
             item: item,
             hash: hash
         });
 
     } catch (error) {
-        console.error('Error fetching item and amount:', error.message);
-        res.status(500).json({ error: 'Failed to fetch item and amount' });
+        console.error('Error:', error.message);
+        res.status(500).json({ error: 'Error' });
     }
 
 })
@@ -143,8 +144,47 @@ app.get('/check', (req, res) => {
     res.send({ "Verified": isVerified })
 })
 
-app.get('/return', (req, res) => {
-    res.render('success');
+app.get('/return', async (req, res) => {
+
+    try {
+        const response = await axios.get(`${process.env.COURSE_SERVER}/api/course/one/${req.query.courseId}`);
+        const item = response.data.payload.name;
+        const amount = response.data.payload.price;
+
+        const newPayment = new Payment({
+            courseId: req.query.courseId,
+            userEmail: req.query.email,
+            itemName: item,
+            paymentAmount: amount,
+            createdAt: new Date(),
+        });
+
+        await newPayment.save();
+
+    } catch (error) {
+        console.error('Error', error.message);
+        res.status(500).json({ error: 'Error' });
+    }
+
+    const data = JSON.stringify({
+        userEmail: req.query.email,
+        courseId: req.query.courseId
+    });
+
+    axios.post(`${process.env.LEARNER_SERVER}/enrollment/enroll`, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(function (response) {
+            console.log(response.data);
+            // handle success
+            res.render('success');
+        })
+        .catch(function (error) {
+            console.error(error);
+            // handle error
+        });
 })
 
 app.get('/cancel', (req, res) => {
