@@ -179,6 +179,29 @@ app.get('/return', async (req, res) => {
         .then(function (response) {
             console.log(response.data);
             // handle success
+        })
+        .catch(function (error) {
+            console.error(error);
+            // handle error
+        });
+
+    const dataNotif = JSON.stringify({
+        notifications: [
+            {
+                email: req.query.email,
+                message: "Your payment has been successful."
+            }
+        ]
+    });
+
+    axios.post(`${process.env.NOTIFICATION_SERVER}/send-notification`, dataNotif, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(function (response) {
+            console.log(response.data);
+            // handle success
             res.render('success');
         })
         .catch(function (error) {
@@ -187,9 +210,34 @@ app.get('/return', async (req, res) => {
         });
 })
 
-app.get('/cancel', (req, res) => {
-    res.render('cancel');
-})
+app.get('/cancel', async (req, res) => {
+    const email = req.query.email;
+    const text = 'Your payment has been cancelled.';
+
+    const data = JSON.stringify({
+        notifications: [
+            {
+                email: email,
+                message: text
+            }
+        ]
+    });
+
+    axios.post(`${process.env.NOTIFICATION_SERVER}/send-notification`, data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(function (response) {
+            console.log(response.data);
+            res.render('cancel');
+            // handle success
+        })
+        .catch(function (error) {
+            console.error(error);
+            // handle error
+        });
+});
 
 app.listen(3000 || process.env.PORT, () => {
     console.log(`Server is running on http://localhost:${process.env.PORT || 3000}`);
