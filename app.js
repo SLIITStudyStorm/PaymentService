@@ -5,6 +5,7 @@ const md5 = require('md5');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const transactionSchema = require('./transactionSchema');
+const { default: axios } = require('axios');
 
 app.set('view engine', 'ejs');
 dotenv.config();
@@ -21,28 +22,48 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 
 var isVerified;
 
+function generateUniqueOrderId(courseId) {
+    let timestamp = new Date().getTime();
+    return `${timestamp}-${courseId}`;
+}
+
 let merchantSecret = process.env.PAYHERE_SECRET;
 
-app.get('/', (req, res) => {
-    const orderId = req.query.order_id || req.body.order_id;
-    const amount = req.query.amount || req.body.amount;
-    const item = req.query.item || req.body.item;
+app.get('/', async (req, res) => {
+    const courseId = req.query.courseId || req.body.courseId;
+    const email = req.query.email || req.body.email;
 
-    if (!orderId || !amount || !item) {
-        return res.status(400).json({ error: 'Missing order_id or amount or item' });
+    if (!courseId || !email) {
+        return res.status(400).json({ error: 'Missing courseId or email' });
     }
-    let merchantId = '1226319';
-    let hashedSecret = md5(merchantSecret).toString().toUpperCase();
-    let amountFormatted = parseFloat(amount).toLocaleString('en-us', { minimumFractionDigits: 2 }).replaceAll(',', '');
-    let currency = 'LKR';
-    let hash = md5(merchantId + orderId + amountFormatted + currency + hashedSecret).toString().toUpperCase();
 
-    res.render('index', {
-        orderId: orderId,
-        amount: amountFormatted,
-        item: item,
-        hash: hash
-    });
+    try {
+        const response = await axios.get(`http://localhost:5000/api/course/one/${courseId}`);
+        const item = response.data.payload.name;
+        const amount = response.data.payload.price;
+
+        console.log('check')
+
+        orderId = generateUniqueOrderId(courseId);
+        let merchantId = '1226319';
+        let hashedSecret = md5(merchantSecret).toString().toUpperCase();
+        let amountFormatted = parseFloat(amount).toLocaleString('en-us', { minimumFractionDigits: 2 }).replaceAll(',', '');
+        let currency = 'LKR';
+        let hash = md5(merchantId + orderId + amountFormatted + currency + hashedSecret).toString().toUpperCase();
+
+        res.render('index', {
+            email: email,
+            orderId: orderId,
+            amount: amountFormatted,
+            item: item,
+            hash: hash
+        });
+
+    } catch (error) {
+        console.error('Error fetching item and amount:', error.message);
+        res.status(500).json({ error: 'Failed to fetch item and amount' });
+    }
+
 })
 
 app.post('/notify', async (req, res) => {
