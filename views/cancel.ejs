@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Payment Cancelled</title>
+    <title>StudyStorm | Payment Cancelled</title>
     <!-- Include Bootstrap CSS -->
     <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link rel="icon" type="image/svg+xml" href="/Logo.svg" />
     <style>
       body {
         background-color: #f6f5ee;
@@ -43,7 +44,9 @@
               <i class="fas fa-exclamation-triangle"></i> Your payment has been
               cancelled. Please try again later.
             </p>
-            <a href="/" class="btn btn-primary">Go back to home page</a>
+            <a href="http://localhost:3000" class="btn btn-primary"
+              >Go back to home page</a
+            >
             <span id="countdown" class="badge badge-primary">5</span>
           </div>
         </div>
@@ -63,7 +66,7 @@
           countdownElement.textContent = String(secondsLeft - 1);
         } else {
           clearInterval(intervalId);
-          //   window.location.href = "/";
+          window.location.href = "http://localhost:3000";
         }
       }, 1000);
     </script>

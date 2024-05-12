@@ -239,8 +239,8 @@ app.get('/cancel', async (req, res) => {
         });
 });
 
-app.listen(3000 || process.env.PORT, () => {
-    console.log(`Server is running on http://localhost:${process.env.PORT || 3000}`);
+app.listen(3001 || process.env.PORT, () => {
+    console.log(`Server is running on http://localhost:${process.env.PORT || 3001}`);
 })
 
 try {

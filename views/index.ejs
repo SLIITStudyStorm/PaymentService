@@ -1,7 +1,8 @@
 <html class="no-js" lang="en">
 <head>
-    <title> Checkout Form </title>
+    <title>StudyStorm | Checkout</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"></link>
+    <link rel="icon" type="image/svg+xml" href="/Logo.svg" />
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
     <style>
@@ -35,9 +36,9 @@
             <div class="card-body">
                 <form role="form" data-toggle="validator" action="https://sandbox.payhere.lk/pay/checkout" method="POST">
                     <input type="hidden" name="merchant_id" value="1226319">    <!-- Replace with your Merchant ID -->
-                    <input type="hidden" name="return_url" value="http://localhost:3000/return?courseId=<%= courseId %>&email=<%= email %>">
-                    <input type="hidden" name="cancel_url" value="http://localhost:3000/cancel?email=<%= email %>">
-                    <input type="hidden" name="notify_url" value="http://localhost:3000/notify">  
+                    <input type="hidden" name="return_url" value="http://localhost:3001/return?courseId=<%= courseId %>&email=<%= email %>">
+                    <input type="hidden" name="cancel_url" value="http://localhost:3001/cancel?email=<%= email %>">
+                    <input type="hidden" name="notify_url" value="http://localhost:3001/notify">  
 
                     <div class="form-group">
                         <label>First Name</label>
