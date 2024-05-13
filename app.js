@@ -48,7 +48,7 @@ app.get('/', async (req, res) => {
         let merchantId = '1226319';
         let hashedSecret = md5(merchantSecret).toString().toUpperCase();
         let amountFormatted = parseFloat(amount).toLocaleString('en-us', { minimumFractionDigits: 2 }).replaceAll(',', '');
-        let currency = 'LKR';
+        let currency = 'USD';
         let hash = md5(merchantId + orderId + amountFormatted + currency + hashedSecret).toString().toUpperCase();
 
         res.render('index', {
